@@ -1,14 +1,13 @@
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
-from rest_framework.serializers import ModelSerializer, CharField, HyperlinkedRelatedField
+from rest_framework.serializers import ModelSerializer, CharField, HyperlinkedRelatedField, JSONField
 from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer, UserSerializer as BaseUserSerializer
 from django.utils.translation import gettext_lazy as _
-from django.utils.timezone import now, timedelta
+from rest_framework.serializers import Serializer
 
-from accounts.models import Users, PublicNotifications, EmailVerify
+from accounts.models import Users, PublicNotifications, MobileVerify
 from images.models import Image
-from storefront_api_generic.generate_random_code import random_code
-from storefront_api_generic.send_email import send_email
+from storefront_api_generic.kavenegar_config import send_sms
 
 
 class UserCreateSerializer(BaseUserCreateSerializer):
@@ -22,7 +21,7 @@ class UserCreateSerializer(BaseUserCreateSerializer):
 
     class Meta(BaseUserCreateSerializer.Meta):
         model = Users
-        fields = ['email', 'username', 'password', 'confirm_password']
+        fields = ['mobile_phone', 'password', 'confirm_password']
         extra_kwargs = {
             'password': {'write_only': True},
             'email': {'required': True},
@@ -42,13 +41,8 @@ class UserCreateSerializer(BaseUserCreateSerializer):
         user = Users.objects.create_user(**validated_data)
         user.is_active = False
         user.save()
-
-        email_verify = EmailVerify.objects.create(
-            email=validated_data['email'],
-            code=random_code(),
-            expired_code=now() + timedelta(minutes=2),
-        )
-        # send_email(email_verify, email_verify.code)
+        get_code = MobileVerify.objects.get(mobile_phone=validated_data['mobile_phone'])
+        send_sms(get_code.code, get_code.mobile_phone)
         return user
 
 
@@ -74,3 +68,17 @@ class ReadPublicNotificationSerializer(ModelSerializer):
     class Meta:
         model = PublicNotifications
         fields = ['is_read']
+
+
+class VerifyAccountSerializer(Serializer):
+    code = CharField(required=True)
+
+    def validate_code(self, data):
+        get_code = MobileVerify.objects.get(code=data['code'])
+        if get_code:
+            get_user = Users.objects.get(mobile_phone=get_code.mobile_phone)
+            get_user.is_active = True
+            get_user.save()
+            get_code.delete()
+        else:
+            raise ValidationError({'code': _('Invalid code')})

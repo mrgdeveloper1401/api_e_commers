@@ -2,15 +2,15 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
 
-from accounts.models import Users, PublicNotifications, EmailVerify
+from accounts.models import Users, PublicNotifications, MobileVerify
 
 
 # Register your models here.
 @admin.register(Users)
 class UserAdmin(BaseUserAdmin):
     fieldsets = (
-        (None, {"fields": ("username", "password")}),
-        (_("Personal info"), {"fields": ("email", "first_name", "last_name", "mobile_phone", "bio", "birth_date")}),
+        (None, {"fields": ("mobile_phone", "password")}),
+        (_("Personal info"), {"fields": ("email", "first_name", "last_name", "bio", "birth_date")}),
         (
             _("Permissions"),
             {
@@ -18,8 +18,7 @@ class UserAdmin(BaseUserAdmin):
                     "is_active",
                     "is_staff",
                     "is_superuser",
-                    "verify_email",
-                    "verify_phone",
+                    "verify_account",
                     'is_accepted_sheba_number',
                     "groups",
                     "user_permissions",
@@ -33,19 +32,21 @@ class UserAdmin(BaseUserAdmin):
             None,
             {
                 "classes": ("wide",),
-                "fields": ('email', "username", "usable_password", "password1", "password2"),
+                "fields": ('mobile_phone', "usable_password", "password1", "password2"),
             },
         ),
     )
-    list_display = ("username", "email", "mobile_phone", "is_staff", 'is_active', 'is_superuser', 'date_joined')
-    list_filter = ("is_staff", "is_superuser", "is_active", "groups", 'date_joined')
-    search_fields = ("username", "email")
-    ordering = ("username",)
+    list_display = ("email", "mobile_phone", "is_staff", 'is_active', 'is_superuser', 'date_joined',
+                    'verify_account')
+    list_filter = ("is_staff", "is_superuser", "is_active", "groups", 'date_joined', 'verify_account')
+    search_fields = ("mobile_phone", "email")
+    ordering = ("date_joined",)
     filter_horizontal = (
         "groups",
         "user_permissions",
     )
     readonly_fields = ['date_joined']
+    list_display_links = ['email', 'mobile_phone']
 
 
 @admin.register(PublicNotifications)
@@ -53,6 +54,6 @@ class PublicNotificationsAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(EmailVerify)
+@admin.register(MobileVerify)
 class EmailVerifyAdmin(admin.ModelAdmin):
-    list_display = ['email', 'code', 'expired_code', 'create_at']
+    list_display = ['mobile_phone', 'code', 'expired_code', 'create_at']

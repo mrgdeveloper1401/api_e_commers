@@ -27,8 +27,10 @@ class Promotion(CreateMixin, UpdateMixin, SoftDeleteMixin):
 
 
 class Product(CreateMixin, UpdateMixin, SoftDeleteMixin):
-    title = models.CharField(max_length=255)
-    slug = models.SlugField(max_length=255, unique=True, allow_unicode=True)
+    fa_title = models.CharField(max_length=255)
+    en_title = models.CharField(max_length=255)
+    fa_slug = models.SlugField(max_length=255, unique=True, allow_unicode=True)
+    en_slug = models.SlugField(max_length=255, unique=True)
     description = models.TextField(blank=True, null=True)
     price = models.DecimalField(max_digits=12, decimal_places=3, validators=[MinValueValidator(Decimal(0))])
     image = models.ForeignKey('images.Image', on_delete=models.PROTECT, related_name='image_product')
@@ -54,7 +56,7 @@ class Product(CreateMixin, UpdateMixin, SoftDeleteMixin):
         return self.reviews.count()
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.title)
+        self.en_slug = slugify(self.fa_slug)
         return super().save(*args, **kwargs)
 
     class Meta:

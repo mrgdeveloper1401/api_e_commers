@@ -46,7 +46,6 @@ THIRD_PARTY_PACKAGE = [
 THIRD_PARTY_APPS = [
     "accounts.apps.AccountsConfig",
     "products.apps.ProductsConfig",
-    "inventory.apps.InventoryConfig",
     "images.apps.ImagesConfig",
     "videos.apps.VideosConfig",
     "core.apps.CoreConfig",
@@ -125,7 +124,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Tehran'
 
 USE_I18N = True
 

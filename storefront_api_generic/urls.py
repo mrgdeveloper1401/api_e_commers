@@ -22,15 +22,15 @@ from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 accounts_api = [
-    path('user/', include('accounts.urls', namespace='accounts')),
+    path('account/', include('accounts.urls', namespace='accounts')),
 ]
 
 product_api = [
-    path('', include('products.urls', namespace='products')),
+    path('product/', include('products.urls', namespace='products')),
 ]
 
 image_api = [
-    path('', include('images.urls', namespace='image'))
+    path('image/', include('images.urls', namespace='image'))
 ]
 
 address_urls = [
@@ -38,28 +38,27 @@ address_urls = [
 ]
 
 orders_urls = [
-    path('', include('orders.urls', namespace='orders')),
-]
-
-inventory_urls = [
-    path('', include('inventory.urls', namespace='inventory'))
+    path('order/', include('orders.urls', namespace='orders')),
 ]
 
 urlpatterns = [
+    # admin panel django
     path('admin/', admin.site.urls),
+    # document swagger
     # YOUR PATTERNS
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     # Optional UI:
     path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    # djoser
+    # authentication package
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
 
-] + debug_toolbar_urls()
+]
 
-urlpatterns += accounts_api + product_api + image_api + orders_urls + address_urls + inventory_urls
+urlpatterns += accounts_api + product_api + image_api + orders_urls + address_urls
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += debug_toolbar_urls()
