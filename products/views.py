@@ -1,5 +1,3 @@
-from rest_framework.generics import get_object_or_404
-from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -20,12 +18,12 @@ class ProductViewSet(ReadOnlyModelViewSet):
     ordering_fields = ['is_available', 'price', 'update_at']
     pagination_class = DefaultPagination
 
-    def retrieve(self, request, *args, **kwargs):
-        pk = self.kwargs.get('pk')
-        en_slug = self.kwargs.get('en_slug')
-        instance = get_object_or_404(self.get_queryset(), pk=pk, en_slug=en_slug)
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+    # def retrieve(self, request, *args, **kwargs):
+    #     pk = self.kwargs.get('pk')
+    #     slug = self.kwargs.get('en_slug')
+    #     instance = get_object_or_404(self.get_queryset(), pk=pk, en_slug=slug)
+    #     serializer = self.get_serializer(instance)
+    #     return Response(serializer.data)
 
 
 class CategoryViewSet(ReadOnlyModelViewSet):

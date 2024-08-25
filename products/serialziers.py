@@ -1,7 +1,6 @@
-from rest_framework.serializers import ModelSerializer, HyperlinkedRelatedField, CharField, SerializerMethodField, \
-    URLField
+from rest_framework.generics import get_object_or_404
+from rest_framework.serializers import ModelSerializer, HyperlinkedRelatedField, CharField, SerializerMethodField
 
-from accounts.models import Users
 from images.models import Image
 from products.models import Product, Category, Review, ManyFacture
 
@@ -25,20 +24,16 @@ class ProductSerialize(ModelSerializer):
     manufacturer = BrandSerializer()
     image = HyperlinkedRelatedField(view_name='image:details_image',
                                     queryset=Image.objects.all())
-    tax = SerializerMethodField(method_name='calculate_tax')
 
     class Meta:
         model = Product
         fields = ['category', 'manufacturer', 'fa_title', 'en_title', 'fa_slug', 'en_slug', 'description', 'price',
-                  'calc_value_price', 'calc_percent_price', 'tax', 'image', 'is_available']
+                  'calc_value_price', 'calc_percent_price', 'calculate_tax', 'image', 'is_available']
 
         extra_kwargs = {
             'en_slug': {'write_only': True},
             'fa_slug': {'write_only': True},
         }
-
-    def calculate_tax(self, product: Product):
-        return product.calculate_tax()
 
 
 class ReviewSerializer(ModelSerializer):
@@ -51,3 +46,9 @@ class ReviewSerializer(ModelSerializer):
 
     def create(self, validated_data):
         return Review.objects.create(**validated_data)
+
+    def validate(self, attrs):
+        product_id = self.context['product_id']
+        product = get_object_or_404(Product, pk=product_id)
+        if product:
+            return attrs

@@ -49,6 +49,7 @@ class Product(CreateMixin, UpdateMixin, SoftDeleteMixin):
     def __str__(self):
         return self.fa_title
 
+    @property
     def calculate_tax(self):
         return self.price * Decimal(0.1)
 
