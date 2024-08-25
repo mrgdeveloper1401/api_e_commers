@@ -37,7 +37,11 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['product', 'user', 'title', 'is_active', 'create_at', 'update_at']
+    list_select_related = ['product', 'user']
+    list_filter = ['create_at', 'update_at', 'is_active']
+    search_fields = ['product__fa_title']
+    list_max_show_all = 30
 
 
 @admin.register(ManyFacture)

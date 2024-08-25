@@ -1,5 +1,4 @@
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
@@ -23,10 +22,9 @@ class ProductViewSet(ReadOnlyModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         pk = self.kwargs.get('pk')
-        slug = self.kwargs.get('en_slug')
-        instance = get_object_or_404(self.get_queryset(), pk=pk, en_slug=slug)
+        en_slug = self.kwargs.get('en_slug')
+        instance = get_object_or_404(self.get_queryset(), pk=pk, en_slug=en_slug)
         serializer = self.get_serializer(instance)
-        print(self.kwargs)
         return Response(serializer.data)
 
 
@@ -43,8 +41,8 @@ class ReviewViewSet(ModelViewSet):
         serializer.save(user=self.request.user, product_id=self.kwargs['product_pk'])
 
     def get_serializer_context(self):
-        return {'product_id': self.kwargs['product_pk'],
-                'request': self.request}
+        return {'product_id': self.kwargs['product_pk']}
 
     def get_queryset(self):
-        return Review.objects.filter(product_id=self.kwargs['product_pk'], is_active=True, user__is_active=True).select_related('user', 'product')
+        return (Review.objects.filter(product_id=self.kwargs['product_pk'], is_active=True, user__is_active=True).
+                select_related('user', 'product'))
