@@ -14,7 +14,7 @@ class ProductAttributeValueInline(admin.TabularInline):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     readonly_fields = ['deleted_at', 'is_deleted']
-    prepopulated_fields = {'en_slug': ('en_title',)}
+    prepopulated_fields = {'en_slug': ('en_title',), 'fa_slug': ('fa_title',)}
     raw_id_fields = ['image', 'category']
     inlines = [ProductAttributeValueInline]
     list_display = ['en_title', 'id', 'category', 'price', 'review_count']

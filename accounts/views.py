@@ -25,7 +25,5 @@ class PublicNotificationViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelM
 class VerifyAccountView(APIView):
     def post(self, request):
         ser_data = VerifyAccountSerializer(data=request.data)
-        print(ser_data)
         ser_data.is_valid(raise_exception=True)
-        ser_data.save()
         return Response({'message': 'accepted code'}, status=HTTP_200_OK)

@@ -15,5 +15,6 @@ product_router.register('reviews', ReviewViewSet, basename='product_reviews')
 urlpatterns = [
     path('', include(router.urls), name='category'),
     path('', include(router.urls), name='products'),
+    path('product/<int:pk>/<slug:en_slug>/', ProductViewSet.as_view({'get': 'retrieve'}), name='product_detail'),
 ]
 urlpatterns += router.urls + product_router.urls

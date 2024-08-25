@@ -8,7 +8,7 @@ from products.models import Product
 class SimpleProductSerializer(ModelSerializer):
     class Meta:
         model = Product
-        fields = ['title', 'price']
+        fields = ['fa_title', 'price']
 
 
 class SimpleUserSerializer(ModelSerializer):

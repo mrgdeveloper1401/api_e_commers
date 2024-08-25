@@ -22,23 +22,23 @@ from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 accounts_api = [
-    path('account/', include('accounts.urls', namespace='accounts')),
+    path('', include('accounts.urls', namespace='accounts')),
 ]
 
 product_api = [
-    path('product/', include('products.urls', namespace='products')),
+    path('', include('products.urls', namespace='products')),
 ]
 
 image_api = [
-    path('image/', include('images.urls', namespace='image'))
+    path('', include('images.urls', namespace='image'))
 ]
 
 address_urls = [
-    path('address/', include('address.urls', namespace='address')),
+    path('', include('address.urls', namespace='address')),
 ]
 
 orders_urls = [
-    path('order/', include('orders.urls', namespace='orders')),
+    path('', include('orders.urls', namespace='orders')),
 ]
 
 urlpatterns = [

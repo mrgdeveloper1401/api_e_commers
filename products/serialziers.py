@@ -29,10 +29,12 @@ class ProductSerialize(ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['category', 'manufacturer', 'title', 'slug', 'description', 'price', 'tax', 'image', 'is_available']
+        fields = ['category', 'manufacturer', 'fa_title', 'en_title', 'fa_slug', 'en_slug', 'description', 'price',
+                  'calc_value_price', 'calc_percent_price', 'tax', 'image', 'is_available']
 
         extra_kwargs = {
-            'slug': {'write_only': True},
+            'en_slug': {'write_only': True},
+            'fa_slug': {'write_only': True},
         }
 
     def calculate_tax(self, product: Product):
@@ -40,13 +42,12 @@ class ProductSerialize(ModelSerializer):
 
 
 class ReviewSerializer(ModelSerializer):
-    user = HyperlinkedRelatedField(view_name="accounts:profile",
-                                   queryset=Users.objects.all())
+    user = CharField(read_only=True)
+    product = CharField(read_only=True)
 
     class Meta:
         model = Review
-        fields = ['user', 'title', 'review_body', 'rate']
+        fields = ['user', 'product', 'title', 'review_body', 'rate']
 
     def create(self, validated_data):
-        product_id = self.context['product_id']
-        return Review.objects.create(product_id=product_id, **validated_data)
+        return Review.objects.create(**validated_data)

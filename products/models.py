@@ -1,11 +1,11 @@
 from decimal import Decimal
-
 from django.db import models
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
-from core.models import UpdateMixin, CreateMixin, SoftDeleteMixin
 from django_jalali.db.models import jDateTimeField, jDateField
 from django.core.validators import MinValueValidator
+
+from core.models import UpdateMixin, CreateMixin, SoftDeleteMixin
 
 
 # Create your models here.
@@ -47,13 +47,22 @@ class Product(CreateMixin, UpdateMixin, SoftDeleteMixin):
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.title
+        return self.fa_title
 
     def calculate_tax(self):
         return self.price * Decimal(0.1)
 
     def review_count(self):
         return self.reviews.count()
+
+    @property
+    def calc_value_price(self):
+        return self.price - self.discount_value
+
+    @property
+    def calc_percent_price(self):
+        p = (self.price * self.discount_percent) / 100
+        return p
 
     def save(self, *args, **kwargs):
         self.en_slug = slugify(self.fa_slug)
@@ -85,7 +94,7 @@ class Warranty(CreateMixin, UpdateMixin, SoftDeleteMixin):
     contract_info = models.CharField(max_length=15)
 
     def __str__(self):
-        return f"{self.product.title} {self.provider}"
+        return f"{self.product.fa_title} {self.provider}"
 
     class Meta:
         db_table = 'warranty'
@@ -118,7 +127,8 @@ class ProductAttributeValue(CreateMixin, UpdateMixin, SoftDeleteMixin):
 
 class Review(CreateMixin, UpdateMixin, SoftDeleteMixin):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
-    user = models.ForeignKey('accounts.Users', on_delete=models.CASCADE, related_name='user_reviews')
+    user = models.ForeignKey('accounts.Users', on_delete=models.CASCADE, related_name='user_reviews',
+                             limit_choices_to={'is_active': True})
     title = models.CharField(max_length=255)
     review_body = models.TextField()
     is_active = models.BooleanField(default=True)
